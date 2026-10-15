@@ -1,22 +1,24 @@
 package com.ciicc;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDateTime;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 public class Account {
+
     private int id;
     private int accountNumber;
     private String accountName;
     private double balance;
+    private LocalDateTime createdAt;
 
     public Account(int accountNumber, String accountName, double balance) {
-        this.balance = balance;
-        this.accountName = accountName;
         this.accountNumber = accountNumber;
+        this.accountName = accountName;
+        this.balance = balance;
     }
 }
