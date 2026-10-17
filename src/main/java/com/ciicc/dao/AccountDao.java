@@ -1,6 +1,7 @@
 package com.ciicc.dao;
 
 import com.ciicc.model.Account;
+import com.ciicc.config.DatabaseConnection;
 
 import java.util.List;
 

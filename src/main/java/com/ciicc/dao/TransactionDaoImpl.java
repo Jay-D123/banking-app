@@ -4,10 +4,7 @@ import com.ciicc.config.DatabaseConnection;
 import com.ciicc.model.Transaction;
 import com.ciicc.model.TransactionType;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,4 +77,21 @@ public class TransactionDaoImpl implements TransactionDao {
             }
             return transactions;
         }
+
+    @Override
+    public int countTransactions() {
+        String query = "SELECT count(*) FROM transactions";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query);
+        ){
+            if(resultSet.next()){
+                return resultSet.getInt(1);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
+}

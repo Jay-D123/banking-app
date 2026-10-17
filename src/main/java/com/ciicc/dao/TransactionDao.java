@@ -7,4 +7,6 @@ import java.util.List;
 public interface TransactionDao {
     boolean insertTransaction(Transaction transaction);
     List<Transaction> findTransactionByAccount (int accountNumber);
+
+    int countTransactions();
 }
