@@ -244,4 +244,14 @@ public class BankingMenu {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
+    public List<Transaction> getTransactionHistory(int accountNumber) throws AccountNotFoundException {
+        Account account = accountDao.findAccountByNumber(accountNumber);
+
+        if (account == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+
+        return transactionDao.findTransactionsByAccount(accountNumber);
+    }
 }
