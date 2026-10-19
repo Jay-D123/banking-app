@@ -6,6 +6,7 @@ import com.ciicc.exception.InvalidTransactionException;
 import com.ciicc.model.Account;
 import com.ciicc.exception.AccountNotFoundException;
 import java.util.List;
+import com.ciicc.model.Transaction;
 
 public class BankingMenu {
 
@@ -33,6 +34,9 @@ public class BankingMenu {
                     break;
                 case "3":
                     listAccounts();
+                    break;
+                case "4":
+                    deposit();
                     break;
                 case "0":
                     running = false;
@@ -130,5 +134,37 @@ public class BankingMenu {
 
         System.out.println();
         System.out.println("Total accounts: " + accounts.size());
+    }
+
+    private void deposit() {
+        System.out.println();
+        System.out.println("------ DEPOSIT ------");
+
+        try {
+            System.out.print("Enter account number: ");
+            int accountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            System.out.print("Enter deposit amount: ");
+            double amount = Double.parseDouble(scanner.nextLine().trim());
+
+            Transaction transaction = bankingService.deposit(accountNumber, amount);
+
+            double previousBalance = transaction.getBalance() - transaction.getAmount();
+
+            System.out.println();
+            System.out.printf("Previous Balance: ₱%,.2f%n", previousBalance);
+            System.out.printf("Deposit Amount: ₱%,.2f%n", transaction.getAmount());
+            System.out.printf("New Balance: ₱%,.2f%n", transaction.getBalance());
+            System.out.println("Deposit successful!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
+        } catch (AccountNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (InvalidTransactionException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }
