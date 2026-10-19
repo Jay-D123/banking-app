@@ -79,4 +79,43 @@ public class BankingService {
         int nextNumber = transactionDao.countTransactions() + 1;
         return String.format("TXN-%03d", nextNumber);
     }
+
+    public Transaction deposit(int accountNumber, double amount)
+            throws AccountNotFoundException, InvalidTransactionException {
+
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Deposit amount must be greater than zero.");
+        }
+
+        Account account = accountDao.findAccountByNumber(accountNumber);
+
+        if (account == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+
+        double newBalance = account.getBalance() + amount;
+
+        boolean updated = accountDao.updateBalance(accountNumber, newBalance);
+
+        if (!updated) {
+            throw new IllegalStateException("Failed to update balance.");
+        }
+
+        Transaction transaction = new Transaction(
+                generateReference(),
+                accountNumber,
+                TransactionType.DEPOSIT,
+                amount,
+                newBalance,
+                null
+        );
+
+        boolean inserted = transactionDao.insertTransaction(transaction);
+
+        if (!inserted) {
+            throw new IllegalStateException("Failed to record deposit transaction.");
+        }
+
+        return transaction;
+    }
 }
