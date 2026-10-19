@@ -162,4 +162,34 @@ public class BankingService {
 
         return transaction;
     }
+
+    public Transaction transfer(int sourceAccountNumber, int destinationAccountNumber, double amount)
+            throws AccountNotFoundException, InvalidTransactionException, InsufficientBalanceException {
+
+        if (sourceAccountNumber == destinationAccountNumber) {
+            throw new InvalidTransactionException("Source and destination accounts must be different.");
+        }
+
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Transfer amount must be greater than zero.");
+        }
+
+        Account source = accountDao.findAccountByNumber(sourceAccountNumber);
+
+        if (source == null) {
+            throw new AccountNotFoundException(sourceAccountNumber);
+        }
+
+        Account destination = accountDao.findAccountByNumber(destinationAccountNumber);
+
+        if (destination == null) {
+            throw new AccountNotFoundException(destinationAccountNumber);
+        }
+
+        if (amount > source.getBalance()) {
+            throw new InsufficientBalanceException(source.getBalance(), amount);
+        }
+
+        return null; // pansamantala, papalitan natin sa susunod na step
+    }
 }
