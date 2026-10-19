@@ -8,6 +8,7 @@ import com.ciicc.model.Transaction;
 import com.ciicc.model.TransactionType;
 import com.ciicc.exception.AccountNotFoundException;
 import java.util.List;
+import com.ciicc.exception.InsufficientBalanceException;
 
 public class BankingService {
 
@@ -114,6 +115,49 @@ public class BankingService {
 
         if (!inserted) {
             throw new IllegalStateException("Failed to record deposit transaction.");
+        }
+
+        return transaction;
+    }
+
+    public Transaction withdraw(int accountNumber, double amount)
+            throws AccountNotFoundException, InvalidTransactionException, InsufficientBalanceException {
+
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Withdrawal amount must be greater than zero.");
+        }
+
+        Account account = accountDao.findAccountByNumber(accountNumber);
+
+        if (account == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+
+        if (amount > account.getBalance()) {
+            throw new InsufficientBalanceException(account.getBalance(), amount);
+        }
+
+        double newBalance = account.getBalance() - amount;
+
+        boolean updated = accountDao.updateBalance(accountNumber, newBalance);
+
+        if (!updated) {
+            throw new IllegalStateException("Failed to update balance.");
+        }
+
+        Transaction transaction = new Transaction(
+                generateReference(),
+                accountNumber,
+                TransactionType.WITHDRAW,
+                amount,
+                newBalance,
+                null
+        );
+
+        boolean inserted = transactionDao.insertTransaction(transaction);
+
+        if (!inserted) {
+            throw new IllegalStateException("Failed to record withdrawal transaction.");
         }
 
         return transaction;
