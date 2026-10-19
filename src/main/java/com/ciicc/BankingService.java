@@ -6,6 +6,7 @@ import com.ciicc.model.Account;
 import com.ciicc.exception.InvalidTransactionException;
 import com.ciicc.model.Transaction;
 import com.ciicc.model.TransactionType;
+import com.ciicc.exception.AccountNotFoundException;
 
 public class BankingService {
 
@@ -56,6 +57,16 @@ public class BankingService {
         }
 
         return accountDao.findAccountByNumber(accountNumber);
+    }
+
+    public Account balanceInquiry(int accountNumber) throws AccountNotFoundException {
+        Account account = accountDao.findAccountByNumber(accountNumber);
+
+        if (account == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+
+        return account;
     }
 
     private String generateReference() {
