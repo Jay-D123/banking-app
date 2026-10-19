@@ -7,6 +7,7 @@ import com.ciicc.model.Account;
 import com.ciicc.exception.AccountNotFoundException;
 import java.util.List;
 import com.ciicc.model.Transaction;
+import com.ciicc.exception.InsufficientBalanceException;
 
 public class BankingMenu {
 
@@ -37,6 +38,9 @@ public class BankingMenu {
                     break;
                 case "4":
                     deposit();
+                    break;
+                case "5":
+                    withdraw();
                     break;
                 case "0":
                     running = false;
@@ -162,6 +166,40 @@ public class BankingMenu {
         } catch (AccountNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (InvalidTransactionException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void withdraw() {
+        System.out.println();
+        System.out.println("------ WITHDRAW ------");
+
+        try {
+            System.out.print("Enter account number: ");
+            int accountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            System.out.print("Enter withdrawal amount: ");
+            double amount = Double.parseDouble(scanner.nextLine().trim());
+
+            Transaction transaction = bankingService.withdraw(accountNumber, amount);
+
+            double previousBalance = transaction.getBalance() + transaction.getAmount();
+
+            System.out.println();
+            System.out.printf("Previous Balance: ₱%,.2f%n", previousBalance);
+            System.out.printf("Withdrawal Amount: ₱%,.2f%n", transaction.getAmount());
+            System.out.printf("New Balance: ₱%,.2f%n", transaction.getBalance());
+            System.out.println("Withdrawal successful!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
+        } catch (AccountNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (InvalidTransactionException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (InsufficientBalanceException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (IllegalStateException e) {
             System.out.println("Error: " + e.getMessage());
