@@ -94,4 +94,28 @@ public class TransactionDaoImpl implements TransactionDao {
         }
         return 0;
     }
+
+    @Override
+    public boolean insertTransaction(Connection connection, Transaction transaction) throws SQLException {
+        String query = "INSERT INTO transactions(transaction_reference, account_number, transaction_type, amount, balance, reference_account) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, transaction.getTransactionReference());
+            preparedStatement.setInt(2, transaction.getAccountNumber());
+            preparedStatement.setString(3, transaction.getTransactionType().name());
+            preparedStatement.setDouble(4, transaction.getAmount());
+            preparedStatement.setDouble(5, transaction.getBalance());
+
+            if (transaction.getReferenceAccount() != null) {
+                preparedStatement.setInt(6, transaction.getReferenceAccount());
+            } else {
+                preparedStatement.setNull(6, Types.INTEGER);
+            }
+
+            int numberOfRowsInserted = preparedStatement.executeUpdate();
+
+            return numberOfRowsInserted > 0;
+        }
+    }
 }

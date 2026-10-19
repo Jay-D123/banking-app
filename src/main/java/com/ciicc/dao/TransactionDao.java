@@ -1,6 +1,8 @@
 package com.ciicc.dao;
 
 import com.ciicc.model.Transaction;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import java.util.List;
 
@@ -9,4 +11,6 @@ public interface TransactionDao {
     List<Transaction> findTransactionByAccount (int accountNumber);
 
     int countTransactions();
+
+    boolean insertTransaction(Connection connection, Transaction transaction) throws SQLException;
 }
