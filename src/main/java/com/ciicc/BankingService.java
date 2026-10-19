@@ -1,5 +1,6 @@
 package com.ciicc;
 
+import com.ciicc.config.DatabaseConnection;
 import com.ciicc.dao.AccountDao;
 import com.ciicc.dao.TransactionDao;
 import com.ciicc.model.Account;
@@ -9,6 +10,8 @@ import com.ciicc.model.TransactionType;
 import com.ciicc.exception.AccountNotFoundException;
 import java.util.List;
 import com.ciicc.exception.InsufficientBalanceException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class BankingService {
 
@@ -190,6 +193,43 @@ public class BankingService {
             throw new InsufficientBalanceException(source.getBalance(), amount);
         }
 
-        return null; // pansamantala, papalitan natin sa susunod na step
+        String reference = generateReference();
+        double sourceNewBalance = source.getBalance() - amount;
+        double destinationNewBalance = destination.getBalance() + amount;
+
+        Transaction transaction = new Transaction(
+                reference,
+                sourceAccountNumber,
+                TransactionType.TRANSFER,
+                amount,
+                sourceNewBalance,
+                destinationAccountNumber
+        );
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+
+            connection.setAutoCommit(false);
+
+            try {
+                boolean sourceUpdated = accountDao.updateBalance(connection, sourceAccountNumber, sourceNewBalance);
+                boolean destinationUpdated = accountDao.updateBalance(connection, destinationAccountNumber, destinationNewBalance);
+                boolean transactionInserted = transactionDao.insertTransaction(connection, transaction);
+
+                if (!sourceUpdated || !destinationUpdated || !transactionInserted) {
+                    throw new SQLException("A transfer step did not complete.");
+                }
+
+                connection.commit();
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new IllegalStateException("Transfer failed. No changes were made.");
+            }
+
+        } catch (SQLException e) {
+            throw new IllegalStateException("Transfer failed: " + e.getMessage());
+        }
+
+        return transaction;
     }
 }
