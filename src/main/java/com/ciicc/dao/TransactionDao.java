@@ -3,12 +3,11 @@ package com.ciicc.dao;
 import com.ciicc.model.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import java.util.List;
 
 public interface TransactionDao {
     boolean insertTransaction(Transaction transaction);
-    List<Transaction> findTransactionByAccount (int accountNumber);
+    List<Transaction> findTransactionsByAccount(int accountNumber);
 
     int countTransactions();
 

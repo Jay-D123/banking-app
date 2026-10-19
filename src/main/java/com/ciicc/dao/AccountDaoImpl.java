@@ -91,10 +91,6 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public boolean updateBalance(int accountNumber, double newBalance) {
-        return false;
-    }
-
-    public boolean updateAccount(int accountNumber, double newBalance) {
         String query = "UPDATE accounts SET balance = ? WHERE account_number = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -104,9 +100,9 @@ public class AccountDaoImpl implements AccountDao {
             preparedStatement.setDouble(1, newBalance);
             preparedStatement.setInt(2, accountNumber);
 
-            int numberOfRowsInserted = preparedStatement.executeUpdate();
+            int numberOfRowsUpdated = preparedStatement.executeUpdate();
 
-            return numberOfRowsInserted > 0;
+            return numberOfRowsUpdated > 0;
 
         } catch (Exception exception) {
             exception.printStackTrace();

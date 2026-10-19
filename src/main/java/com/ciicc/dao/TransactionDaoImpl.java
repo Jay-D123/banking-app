@@ -44,7 +44,7 @@ public class TransactionDaoImpl implements TransactionDao {
 
     @Override
     public
-    List<Transaction> findTransactionByAccount(int accountNumber) {
+    List<Transaction> findTransactionsByAccount(int accountNumber) {
         List<Transaction> transactions = new ArrayList<>();
         String query = "SELECT * FROM transactions WHERE account_number = ? ORDER BY id";
 

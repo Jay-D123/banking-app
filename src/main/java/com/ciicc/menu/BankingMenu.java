@@ -8,6 +8,7 @@ import com.ciicc.exception.AccountNotFoundException;
 import java.util.List;
 import com.ciicc.model.Transaction;
 import com.ciicc.exception.InsufficientBalanceException;
+import java.time.format.DateTimeFormatter;
 
 public class BankingMenu {
 
@@ -44,6 +45,9 @@ public class BankingMenu {
                     break;
                 case "6":
                     transfer();
+                    break;
+                case "7":
+                    transactionHistory();
                     break;
                 case "0":
                     running = false;
@@ -245,13 +249,48 @@ public class BankingMenu {
         }
     }
 
-    public List<Transaction> getTransactionHistory(int accountNumber) throws AccountNotFoundException {
-        Account account = accountDao.findAccountByNumber(accountNumber);
+    private void transactionHistory() {
+        System.out.println();
+        System.out.println("------ TRANSACTION HISTORY ------");
 
-        if (account == null) {
-            throw new AccountNotFoundException(accountNumber);
+        try {
+            System.out.print("Enter account number: ");
+            int accountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            List<Transaction> transactions = bankingService.getTransactionHistory(accountNumber);
+
+            if (transactions.isEmpty()) {
+                System.out.println("No transactions found.");
+                return;
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            System.out.println();
+            System.out.printf("%-10s %-10s %14s  %-19s  %-11s %14s%n",
+                    "Reference", "Type", "Amount", "Date", "Ref Account", "Balance");
+
+            for (Transaction transaction : transactions) {
+                String referenceAccount = transaction.getReferenceAccount() != null
+                        ? String.valueOf(transaction.getReferenceAccount())
+                        : "-";
+
+                System.out.printf("%-10s %-10s ₱%,13.2f  %-19s  %-11s ₱%,13.2f%n",
+                        transaction.getTransactionReference(),
+                        transaction.getTransactionType(),
+                        transaction.getAmount(),
+                        transaction.getCreatedAt().format(formatter),
+                        referenceAccount,
+                        transaction.getBalance());
+            }
+
+            System.out.println();
+            System.out.println("Total transactions: " + transactions.size());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
+        } catch (AccountNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
         }
-
-        return transactionDao.findTransactionsByAccount(accountNumber);
     }
 }
