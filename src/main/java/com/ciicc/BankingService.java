@@ -7,6 +7,7 @@ import com.ciicc.exception.InvalidTransactionException;
 import com.ciicc.model.Transaction;
 import com.ciicc.model.TransactionType;
 import com.ciicc.exception.AccountNotFoundException;
+import java.util.List;
 
 public class BankingService {
 
@@ -67,6 +68,10 @@ public class BankingService {
         }
 
         return account;
+    }
+
+    public List<Account> listAccounts() {
+        return accountDao.findAllAccounts();
     }
 
     private String generateReference() {
