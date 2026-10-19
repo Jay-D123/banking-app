@@ -42,6 +42,9 @@ public class BankingMenu {
                 case "5":
                     withdraw();
                     break;
+                case "6":
+                    transfer();
+                    break;
                 case "0":
                     running = false;
                     System.out.println("Thank you for choosing CIICC Bank. Have a great day!");
@@ -192,6 +195,42 @@ public class BankingMenu {
             System.out.printf("Withdrawal Amount: ₱%,.2f%n", transaction.getAmount());
             System.out.printf("New Balance: ₱%,.2f%n", transaction.getBalance());
             System.out.println("Withdrawal successful!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
+        } catch (AccountNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (InvalidTransactionException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (InsufficientBalanceException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void transfer() {
+        System.out.println();
+        System.out.println("------ TRANSFER ------");
+
+        try {
+            System.out.print("Enter source account number: ");
+            int sourceAccountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            System.out.print("Enter destination account number: ");
+            int destinationAccountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            System.out.print("Enter transfer amount: ");
+            double amount = Double.parseDouble(scanner.nextLine().trim());
+
+            Transaction transaction = bankingService.transfer(
+                    sourceAccountNumber, destinationAccountNumber, amount);
+
+            System.out.println();
+            System.out.println("From Account: " + transaction.getAccountNumber());
+            System.out.println("To Account: " + transaction.getReferenceAccount());
+            System.out.printf("Amount: ₱%,.2f%n", transaction.getAmount());
+            System.out.println("Transfer successful!");
 
         } catch (NumberFormatException e) {
             System.out.println("Error: Please enter a valid number.");
