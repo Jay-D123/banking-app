@@ -4,6 +4,8 @@ import com.ciicc.dao.AccountDao;
 import com.ciicc.dao.TransactionDao;
 import com.ciicc.model.Account;
 import com.ciicc.exception.InvalidTransactionException;
+import com.ciicc.model.Transaction;
+import com.ciicc.model.TransactionType;
 
 public class BankingService {
 
@@ -34,6 +36,23 @@ public class BankingService {
 
         if (!inserted) {
             throw new IllegalStateException("Failed to create account.");
+        }
+
+        if (initialDeposit > 0) {
+            Transaction transaction = new Transaction(
+                    generateReference(),
+                    accountNumber,
+                    TransactionType.DEPOSIT,
+                    initialDeposit,
+                    initialDeposit,
+                    null
+            );
+
+            boolean transactionInserted = transactionDao.insertTransaction(transaction);
+
+            if (!transactionInserted) {
+                throw new IllegalStateException("Failed to record initial deposit.");
+            }
         }
 
         return accountDao.findAccountByNumber(accountNumber);
