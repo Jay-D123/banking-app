@@ -5,6 +5,7 @@ import java.util.Scanner;
 import com.ciicc.exception.InvalidTransactionException;
 import com.ciicc.model.Account;
 import com.ciicc.exception.AccountNotFoundException;
+import java.util.List;
 
 public class BankingMenu {
 
@@ -29,6 +30,9 @@ public class BankingMenu {
                     break;
                 case "2":
                     balanceInquiry();
+                    break;
+                case "3":
+                    listAccounts();
                     break;
                 case "0":
                     running = false;
@@ -105,5 +109,26 @@ public class BankingMenu {
         } catch (AccountNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+    private void listAccounts() {
+        System.out.println();
+        System.out.println("------ LIST ACCOUNTS ------");
+
+        List<Account> accounts = bankingService.listAccounts();
+
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts found.");
+            return;
+        }
+
+        for (Account account : accounts) {
+            System.out.printf("%-10d %-25s ₱%,.2f%n",
+                    account.getAccountNumber(),
+                    account.getAccountName(),
+                    account.getBalance());
+        }
+
+        System.out.println();
+        System.out.println("Total accounts: " + accounts.size());
     }
 }
