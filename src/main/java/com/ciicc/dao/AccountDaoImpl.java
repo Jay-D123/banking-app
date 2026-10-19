@@ -114,4 +114,43 @@ public class AccountDaoImpl implements AccountDao {
 
         return false;
     }
+
+    @Override
+    public boolean updateBalance(Connection connection, int accountNumber, double newBalance) throws SQLException {
+        String query = "UPDATE accounts SET balance = ? WHERE account_number = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setDouble(1, newBalance);
+            preparedStatement.setInt(2, accountNumber);
+
+            int numberOfRowsUpdated = preparedStatement.executeUpdate();
+
+            return numberOfRowsUpdated > 0;
+        }
+    }
+
+    @Override
+    public Account findAccountByNumber(Connection connection, int accountNumber) throws SQLException {
+        String query = "SELECT * FROM accounts WHERE account_number = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, accountNumber);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int id = resultSet.getInt("id");
+                    int accNumber = resultSet.getInt("account_number");
+                    String accountName = resultSet.getString("account_name");
+                    double balance = resultSet.getDouble("balance");
+                    LocalDateTime createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
+
+                    return new Account(id, accNumber, accountName, balance, createdAt);
+                }
+            }
+        }
+
+        return null;
+    }
 }
