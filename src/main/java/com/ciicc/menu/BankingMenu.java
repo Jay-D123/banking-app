@@ -4,6 +4,7 @@ import com.ciicc.BankingService;
 import java.util.Scanner;
 import com.ciicc.exception.InvalidTransactionException;
 import com.ciicc.model.Account;
+import com.ciicc.exception.AccountNotFoundException;
 
 public class BankingMenu {
 
@@ -25,6 +26,9 @@ public class BankingMenu {
             switch (choice) {
                 case "1":
                     createAccount();
+                    break;
+                case "2":
+                    balanceInquiry();
                     break;
                 case "0":
                     running = false;
@@ -78,6 +82,27 @@ public class BankingMenu {
         } catch (InvalidTransactionException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    private void balanceInquiry() {
+        System.out.println();
+        System.out.println("------ BALANCE INQUIRY ------");
+
+        try {
+            System.out.print("Enter account number: ");
+            int accountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            Account account = bankingService.balanceInquiry(accountNumber);
+
+            System.out.println();
+            System.out.println("Account Number: " + account.getAccountNumber());
+            System.out.println("Account Holder: " + account.getAccountName());
+            System.out.printf("Current Balance: ₱%,.2f%n", account.getBalance());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
+        } catch (AccountNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
