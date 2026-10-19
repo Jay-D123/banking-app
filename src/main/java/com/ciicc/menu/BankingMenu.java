@@ -1,8 +1,9 @@
 package com.ciicc.menu;
 
 import com.ciicc.BankingService;
-
 import java.util.Scanner;
+import com.ciicc.exception.InvalidTransactionException;
+import com.ciicc.model.Account;
 
 public class BankingMenu {
 
@@ -22,9 +23,12 @@ public class BankingMenu {
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
+                case "1":
+                    createAccount();
+                    break;
                 case "0":
                     running = false;
-                    System.out.println("Thank you for using the Banking Application. Goodbye!");
+                    System.out.println("Thank you for choosing CIICC Bank. Have a great day!");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -45,5 +49,36 @@ public class BankingMenu {
         System.out.println("6. Transfer");
         System.out.println("7. Transaction History");
         System.out.println("0. Exit");
+    }
+
+    private void createAccount() {
+        System.out.println();
+        System.out.println("------ CREATE ACCOUNT ------");
+
+        try {
+            System.out.print("Enter account number: ");
+            int accountNumber = Integer.parseInt(scanner.nextLine().trim());
+
+            System.out.print("Enter account holder name: ");
+            String accountName = scanner.nextLine();
+
+            System.out.print("Enter initial deposit: ");
+            double initialDeposit = Double.parseDouble(scanner.nextLine().trim());
+
+            Account account = bankingService.createAccount(accountNumber, accountName, initialDeposit);
+
+            System.out.println();
+            System.out.println("Account Number: " + account.getAccountNumber());
+            System.out.println("Account Name: " + account.getAccountName());
+            System.out.printf("Initial Deposit: ₱%,.2f%n", account.getBalance());
+            System.out.println("Account created successfully!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid number.");
+        } catch (InvalidTransactionException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }

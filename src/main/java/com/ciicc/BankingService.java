@@ -19,18 +19,19 @@ public class BankingService {
         this.transactionDao = transactionDao;
     }
 
-    public Account createAccount(int accountNumber, String accountName, double initialDeposit) {
+    public Account createAccount(int accountNumber, String accountName, double initialDeposit)
+            throws InvalidTransactionException {
 
         if (accountName == null || accountName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Account name must not be empty.");
+            throw new InvalidTransactionException("Account name must not be empty.");
         }
 
         if (initialDeposit < 0) {
-            throw new IllegalArgumentException("Initial deposit must be zero or greater.");
+            throw new InvalidTransactionException("Initial deposit must be zero or greater.");
         }
 
         if (accountDao.findAccountByNumber(accountNumber) != null) {
-            throw new IllegalArgumentException("Account number already exists.");
+            throw new InvalidTransactionException("Account number already exists.");
         }
 
         Account account = new Account(accountNumber, accountName.trim(), initialDeposit);
