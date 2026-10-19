@@ -36,4 +36,9 @@ public class BankingService {
 
         return accountDao.findAccountByNumber(accountNumber);
     }
+
+    private String generateReference() {
+        int nextNumber = transactionDao.countTransactions() + 1;
+        return String.format("TXN-%03d", nextNumber);
+    }
 }
